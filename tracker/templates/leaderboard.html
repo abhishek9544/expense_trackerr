@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Leaderboard | Expense Tracker{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    <div class="header-content">
+        <h1>📊 Leaderboard</h1>
+        <p class="subtitle">Compete with others to earn the top spot!</p>
+    </div>
+</header>
+
+<!-- Period Tabs -->
+<div class="period-tabs">
+    <button class="period-tab active" data-period="weekly">This Week</button>
+    <button class="period-tab" data-period="monthly">This Month</button>
+    <button class="period-tab" data-period="alltime">All Time</button>
+</div>
+
+<!-- Your Rank Card -->
+<div class="your-rank-card">
+    <div class="rank-header">
+        <span class="rank-label">Your Rank</span>
+    </div>
+    <div class="rank-content">
+        <div class="rank-number">#{{ profile.level }}</div>
+        <div class="rank-stats">
+            <div class="rank-stat">
+                <span class="stat-value">{{ profile.xp }}</span>
+                <span class="stat-label">XP</span>
+            </div>
+            <div class="rank-stat">
+                <span class="stat-value">{{ profile.level }}</span>
+                <span class="stat-label">Level</span>
+            </div>
+            <div class="rank-stat">
+                <span class="stat-value">🔥 {{ profile.current_streak }}</span>
+                <span class="stat-label">Streak</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Leaderboard Table -->
+<div class="card">
+    <h2 class="card-title">🏅 Top Players</h2>
+
+    <div class="leaderboard-list">
+        {% for entry in leaderboard %}
+        <div class="leaderboard-item {% if entry.is_current %}is-you{% endif %} rank-{{ entry.rank }}">
+            <div class="lb-rank">
+                {% if entry.rank == 1 %}
+                <span class="rank-icon gold">🥇</span>
+                {% elif entry.rank == 2 %}
+                <span class="rank-icon silver">🥈</span>
+                {% elif entry.rank == 3 %}
+                <span class="rank-icon bronze">🥉</span>
+                {% else %}
+                <span class="rank-number-small">#{{ entry.rank }}</span>
+                {% endif %}
+            </div>
+            <div class="lb-user">
+                <div class="user-avatar">
+                    {% if entry.is_current %}👤{% else %}😊{% endif %}
+                </div>
+                <div class="user-info">
+                    <span class="user-name">{{ entry.name }}</span>
+                    <span class="user-level">Level {{ entry.level }}</span>
+                </div>
+            </div>
+            <div class="lb-stats">
+                <div class="lb-stat">
+                    <span class="lb-stat-value">{{ entry.xp }}</span>
+                    <span class="lb-stat-label">XP</span>
+                </div>
+                <div class="lb-stat">
+                    <span class="lb-stat-value">🔥{{ entry.streak }}</span>
+                    <span class="lb-stat-label">Streak</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Motivation -->
+<div class="motivation-card">
+    <div class="motivation-icon">💪</div>
+    <p>Keep tracking expenses to climb the ranks!</p>
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Expense | Expense Tracker{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    <div class="header-content">
+        <h1>➕ Add Expense</h1>
+        <p class="subtitle">Log your spending and earn XP!</p>
+    </div>
+    <div class="xp-info">
+        <span class="xp-badge-large">+10 XP</span>
+        {% if profile.streak_multiplier > 1 %}
+        <span class="multiplier-active">× {{ profile.streak_multiplier }} streak bonus!</span>
+        {% endif %}
+    </div>
+</header>
+
+<!-- Current Streak -->
+{% if profile.current_streak > 0 %}
+<div class="streak-banner">
+    <span class="streak-icon">🔥</span>
+    <span class="streak-text">{{ profile.current_streak }} day streak! Keep it going!</span>
+</div>
+{% endif %}
+
+<!-- Quick Stats -->
+<div class="stats-bar-mini">
+    <div class="stat-mini">
+        <span class="stat-mini-value">{{ total_expenses }}</span>
+        <span class="stat-mini-label">Total Entries</span>
+    </div>
+    <div class="stat-mini">
+        <span class="stat-mini-value">₹{{ total_amount }}</span>
+        <span class="stat-mini-label">Total Spent</span>
+    </div>
+    <div class="stat-mini">
+        <span class="stat-mini-value">Lv.{{ profile.level }}</span>
+        <span class="stat-mini-label">{{ profile.get_rank }}</span>
+    </div>
+</div>
+
+<!-- Add Expense Form -->
+<div class="card">
+    <h2 class="card-title">New Expense</h2>
+
+    <form method="POST" class="expense-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label class="form-label" for="amount">Amount (₹)</label>
+            <input type="number" id="amount" name="amount" class="form-input" placeholder="Enter amount..." required
+                step="0.01" min="0">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="description">Description</label>
+            <input type="text" id="description" name="description" class="form-input"
+                placeholder="What did you spend on?" required maxlength="255">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" for="category">Category</label>
+                <select id="category" name="category" class="form-input form-select">
+                    {% for cat in categories %}
+                    <option value="{{ cat }}">{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="date">Date</label>
+                <input type="date" id="date" name="date" class="form-input" required>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-glow">
+            ✨ Add Expense & Earn XP
+        </button>
+    </form>
+</div>
+
+<!-- Active Challenges Reminder -->
+{% if active_challenges %}
+<div class="card card-highlight">
+    <h3 class="card-title-sm">🎯 Active Challenges</h3>
+    <div class="mini-challenge-list">
+        {% for uc in active_challenges %}
+        <div class="mini-challenge">
+            <span>{{ uc.challenge.icon }} {{ uc.challenge.title }}</span>
+            <span class="mini-xp">+{{ uc.challenge.xp_reward }} XP</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('date').valueAsDate = new Date();
+</script>
+{% endblock %}

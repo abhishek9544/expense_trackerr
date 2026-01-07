@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}Challenges | Expense Tracker{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    <div class="header-content">
+        <h1>🎯 Challenges</h1>
+        <p class="subtitle">Complete challenges to earn bonus XP!</p>
+    </div>
+</header>
+
+<!-- Challenge Stats -->
+<div class="stats-bar-mini">
+    <div class="stat-mini">
+        <span class="stat-mini-value">{{ profile.challenges_completed }}</span>
+        <span class="stat-mini-label">Completed</span>
+    </div>
+    <div class="stat-mini">
+        <span class="stat-mini-value">{{ profile.streak_multiplier }}x</span>
+        <span class="stat-mini-label">XP Multiplier</span>
+    </div>
+</div>
+
+<!-- Daily Challenges -->
+<div class="card">
+    <h2 class="card-title">📅 Daily Challenges</h2>
+    <p class="card-subtitle">Reset every day at midnight</p>
+
+    <div class="challenge-grid">
+        {% for uc in daily_challenges %}
+        <div class="challenge-card {% if uc.status == 'completed' %}completed{% endif %}">
+            <div class="challenge-header">
+                <span class="challenge-type-badge daily">Daily</span>
+                {% if uc.status == 'completed' %}
+                <span class="challenge-status-badge completed">✓ Completed</span>
+                {% else %}
+                <span class="challenge-status-badge active">Active</span>
+                {% endif %}
+            </div>
+            <div class="challenge-body">
+                <div class="challenge-icon-large">{{ uc.challenge.icon }}</div>
+                <h3>{{ uc.challenge.title }}</h3>
+                <p>{{ uc.challenge.description }}</p>
+            </div>
+            <div class="challenge-footer">
+                <div class="challenge-progress-bar">
+                    <div class="progress-fill-sm"
+                        style="width: {% if uc.status == 'completed' %}100{% else %}{{ uc.progress|default:0 }}{% endif %}%;">
+                    </div>
+                </div>
+                <div class="challenge-reward">
+                    <span class="xp-reward">+{{ uc.challenge.xp_reward }} XP</span>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <p>No daily challenges available. Check back tomorrow!</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Weekly Challenges -->
+<div class="card">
+    <h2 class="card-title">📆 Weekly Challenges</h2>
+    <p class="card-subtitle">Reset every Monday</p>
+
+    <div class="challenge-grid">
+        {% for uc in weekly_challenges %}
+        <div class="challenge-card {% if uc.status == 'completed' %}completed{% endif %} weekly">
+            <div class="challenge-header">
+                <span class="challenge-type-badge weekly">Weekly</span>
+                {% if uc.status == 'completed' %}
+                <span class="challenge-status-badge completed">✓ Completed</span>
+                {% else %}
+                <span class="challenge-status-badge active">In Progress</span>
+                {% endif %}
+            </div>
+            <div class="challenge-body">
+                <div class="challenge-icon-large">{{ uc.challenge.icon }}</div>
+                <h3>{{ uc.challenge.title }}</h3>
+                <p>{{ uc.challenge.description }}</p>
+            </div>
+            <div class="challenge-footer">
+                <div class="challenge-progress-bar">
+                    <div class="progress-fill-sm"
+                        style="width: {% if uc.status == 'completed' %}100{% else %}{{ uc.progress|default:0 }}{% endif %}%;">
+                    </div>
+                </div>
+                <div class="challenge-reward">
+                    <span class="xp-reward">+{{ uc.challenge.xp_reward }} XP</span>
+                    {% if uc.challenge.streak_bonus %}
+                    <span class="bonus-badge">🔥 Streak Bonus</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <p>No weekly challenges available. Check back next week!</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Completed Challenges -->
+{% if completed_challenges %}
+<div class="card">
+    <h2 class="card-title">✅ Recently Completed</h2>
+    <div class="completed-list">
+        {% for uc in completed_challenges %}
+        <div class="completed-item">
+            <span class="completed-icon">{{ uc.challenge.icon }}</span>
+            <div class="completed-info">
+                <span class="completed-title">{{ uc.challenge.title }}</span>
+                <span class="completed-date">{{ uc.completed_at|date:"M d, Y" }}</span>
+            </div>
+            <span class="completed-xp">+{{ uc.challenge.xp_reward }} XP</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

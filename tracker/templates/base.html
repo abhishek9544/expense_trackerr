@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Expense Tracker{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'tracker/css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="theme-{{ profile.theme|default:'dark' }}">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="{% url 'dashboard' %}">💰 ExpenseTracker</a>
+        </div>
+        <div class="nav-links">
+            <a href="{% url 'dashboard' %}" class="nav-item {% if request.path == '/' %}active{% endif %}">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">Dashboard</span>
+            </a>
+            <a href="{% url 'add_expense' %}" class="nav-item {% if 'add' in request.path %}active{% endif %}">
+                <span class="nav-icon">➕</span>
+                <span class="nav-text">Add</span>
+            </a>
+            <a href="{% url 'predictions' %}" class="nav-item {% if 'predictions' in request.path %}active{% endif %}">
+                <span class="nav-icon">🔮</span>
+                <span class="nav-text">Future</span>
+            </a>
+            <a href="{% url 'challenges' %}" class="nav-item {% if 'challenges' in request.path %}active{% endif %}">
+                <span class="nav-icon">🎯</span>
+                <span class="nav-text">Challenges</span>
+            </a>
+            <a href="{% url 'achievements' %}"
+                class="nav-item {% if 'achievements' in request.path %}active{% endif %}">
+                <span class="nav-icon">🏆</span>
+                <span class="nav-text">Badges</span>
+            </a>
+            <a href="{% url 'leaderboard' %}" class="nav-item {% if 'leaderboard' in request.path %}active{% endif %}">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">Ranks</span>
+            </a>
+        </div>
+        <div class="nav-profile">
+            <div class="profile-badge">
+                <span class="level-badge-small">Lv.{{ profile.level }}</span>
+                <span class="xp-badge">{{ profile.xp }} XP</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

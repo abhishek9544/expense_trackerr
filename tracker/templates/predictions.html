@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% block title %}Future You | Expense Tracker{% endblock %}
+
+{% block content %}
+
+<style>
+:root {
+    --bg: #0b1020;
+    --card: rgba(255,255,255,0.06);
+    --border: rgba(255,255,255,0.12);
+    --accent: #22d3ee;
+    --good: #22c55e;
+    --bad: #ef4444;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+}
+
+body {
+    background: radial-gradient(circle at top, #1e293b, #020617);
+    color: var(--text);
+}
+
+.future-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 24px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(14px);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.income-form input {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 8px;
+    width: 120px;
+}
+
+.income-form button {
+    margin-left: 8px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent);
+    font-weight: 600;
+}
+
+.health {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.health-score {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--good);
+}
+
+.health-meta span {
+    margin-right: 24px;
+    font-size: 15px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat h3 {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.stat p {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.negative {
+    color: var(--bad);
+}
+
+.section-title {
+    font-size: 20px;
+    margin-bottom: 12px;
+}
+
+.future-box {
+    border-left: 4px solid var(--accent);
+    padding-left: 16px;
+}
+
+.scenario {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+}
+
+.scenario h4 {
+    margin-bottom: 6px;
+}
+</style>
+
+<div class="future-container">
+
+    <!-- HEADER -->
+    <div class="card header">
+        <h1>🔮 Future You</h1>
+        <form method="get" class="income-form">
+            Monthly Income
+            <input type="number" name="income" value="{{ monthly_income|default:0 }}">
+            <button type="submit">Update</button>
+        </form>
+    </div>
+
+    <!-- HEALTH -->
+    <div class="card health">
+        <div>
+            <div class="health-score">{{ health_status|default:"OK" }}</div>
+            <div class="health-meta">
+                <span>Health Score: <strong>{{ health_score|default:0 }}</strong></span>
+                <span>Savings Rate: <strong>{{ savings_rate|default:0 }}%</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="card grid">
+        <div class="stat">
+            <h3>Daily Avg</h3>
+            <p>₹{{ daily_avg|default:0 }}</p>
+        </div>
+        <div class="stat">
+            <h3>Monthly Spend</h3>
+            <p>₹{{ monthly_avg|default:0 }}</p>
+        </div>
+        <div class="stat">
+            <h3>Monthly Savings</h3>
+            <p class="{% if monthly_savings < 0 %}negative{% endif %}">
+                ₹{{ monthly_savings|default:0 }}
+            </p>
+        </div>
+        <div class="stat">
+            <h3>Yearly Projection</h3>
+            <p class="{% if yearly_savings < 0 %}negative{% endif %}">
+                ₹{{ yearly_savings|default:0 }}
+            </p>
+        </div>
+    </div>
+
+    <!-- INSIGHTS -->
+    {% if insights %}
+    <div class="card">
+        <h2 class="section-title">Insights</h2>
+        {% for i in insights %}
+            <p>• {{ i.text }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- SCENARIOS -->
+    {% if scenarios %}
+    <div class="card">
+        <h2 class="section-title">Possible Futures</h2>
+        <div class="grid">
+            {% for s in scenarios %}
+            <div class="scenario">
+                <h4>{{ s.name }}</h4>
+                <p>{{ s.description }}</p>
+                <p><strong>₹{{ s.monthly_save }}</strong> / month</p>
+                <p><strong>₹{{ s.yearly_save }}</strong> / year</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- FUTURE MESSAGE -->
+    <div class="card future-box">
+        <h2 class="section-title">Message from Future You</h2>
+
+        {% if yearly_savings > 0 %}
+            <p>
+                If you stay consistent, you’ll save
+                <strong>₹{{ yearly_savings }}</strong> next year.
+            </p>
+        {% else %}
+            <p class="negative">
+                At this pace, you’ll lose
+                <strong>₹{{ yearly_savings|default:0 }}</strong> next year.
+                You must change spending.
+            </p>
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock %}

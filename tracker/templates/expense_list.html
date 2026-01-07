@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Expense History | Expense Tracker{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    <div class="header-content">
+        <h1>📋 Expense History</h1>
+        <p class="subtitle">Your spending journey</p>
+    </div>
+    <a href="{% url 'add_expense' %}" class="btn btn-primary">
+        ➕ Add New
+    </a>
+</header>
+
+<!-- New Achievement Notification -->
+{% if new_achievements %}
+{% for ach in new_achievements %}
+<div class="achievement-toast">
+    <div class="toast-icon">🎉</div>
+    <div class="toast-content">
+        <h4>Achievement Unlocked!</h4>
+        <p>{{ ach.icon }} {{ ach.name }} - +{{ ach.xp_reward }} XP</p>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+<!-- Stats Grid -->
+<div class="stats-bar">
+    <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-value">{{ expenses|length }}</div>
+        <div class="stat-label">Total Entries</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">💸</div>
+        <div class="stat-value">₹{{ total_amount }}</div>
+        <div class="stat-label">Total Spent</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-value">₹{{ avg_daily }}</div>
+        <div class="stat-label">Daily Average</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-value">{{ profile.xp }}</div>
+        <div class="stat-label">Total XP</div>
+    </div>
+</div>
+
+<!-- Recent Achievements -->
+{% if recent_achievements %}
+<div class="recent-badges">
+    <span class="badges-label">Recent Badges:</span>
+    {% for ua in recent_achievements %}
+    <span class="badge-mini" title="{{ ua.achievement.name }}">{{ ua.achievement.icon }}</span>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Expense Table -->
+<div class="card">
+    <h2 class="card-title">All Expenses</h2>
+
+    {% if expenses %}
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in expenses %}
+                <tr>
+                    <td>{{ expense.description }}</td>
+                    <td><span class="category-badge">{{ expense.category }}</span></td>
+                    <td class="amount">₹{{ expense.amount }}</td>
+                    <td><span class="date-badge">{{ expense.date }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">📭</div>
+        <p>No expenses recorded yet.</p>
+        <p>Start tracking to earn XP and level up!</p>
+        <a href="{% url 'add_expense' %}" class="btn btn-primary">Add First Expense</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

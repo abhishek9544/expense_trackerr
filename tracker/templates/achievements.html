@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Achievements | Expense Tracker{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    <div class="header-content">
+        <h1>🏆 Achievements</h1>
+        <p class="subtitle">Collect badges and earn XP rewards!</p>
+    </div>
+    <div class="achievement-counter">
+        <span class="counter-value">{{ earned_count }}/{{ total_count }}</span>
+        <span class="counter-label">Unlocked</span>
+    </div>
+</header>
+
+<!-- Achievement Tiers -->
+{% for tier, achievements in achievements_by_tier.items %}
+<div class="card achievement-tier tier-{{ tier }}">
+    <h2 class="card-title tier-title">
+        {% if tier == 'bronze' %}🥉 Bronze Tier
+        {% elif tier == 'silver' %}🥈 Silver Tier
+        {% elif tier == 'gold' %}🥇 Gold Tier
+        {% elif tier == 'platinum' %}💠 Platinum Tier
+        {% elif tier == 'diamond' %}💎 Diamond Tier
+        {% endif %}
+    </h2>
+
+    <div class="achievement-grid">
+        {% for item in achievements %}
+        <div class="achievement-card {% if item.earned %}earned{% else %}locked{% endif %}">
+            <div class="achievement-icon-wrapper">
+                <span class="achievement-icon">{{ item.achievement.icon }}</span>
+                {% if item.earned %}
+                <span class="earned-badge">✓</span>
+                {% endif %}
+            </div>
+            <div class="achievement-details">
+                <h4>{{ item.achievement.name }}</h4>
+                <p>{{ item.achievement.description }}</p>
+                {% if not item.earned %}
+                <div class="achievement-progress">
+                    <div class="mini-progress">
+                        <div class="mini-progress-fill" style="width: {{ item.progress }}%;"></div>
+                    </div>
+                    <span class="progress-text-sm">{{ item.progress }}%</span>
+                </div>
+                {% endif %}
+            </div>
+            <div class="achievement-reward">
+                <span class="xp-value">+{{ item.achievement.xp_reward }}</span>
+                <span class="xp-label">XP</span>
+            </div>
+        </div>
+        {% empty %}
+        <p class="empty-text">No achievements in this tier</p>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

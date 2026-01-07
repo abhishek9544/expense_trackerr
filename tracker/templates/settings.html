@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings | Expense Tracker{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    <div class="header-content">
+        <h1>⚙️ Settings</h1>
+        <p class="subtitle">Customize your experience</p>
+    </div>
+</header>
+
+<!-- Theme Selection -->
+<div class="card">
+    <h2 class="card-title">🎨 Theme</h2>
+    <p class="card-subtitle">Unlock new themes by leveling up!</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="theme-grid">
+            {% for theme in themes %}
+            <label
+                class="theme-option {% if profile.theme == theme.id %}selected{% endif %} {% if not theme.unlocked %}locked{% endif %}">
+                <input type="radio" name="theme" value="{{ theme.id }}" {% if profile.theme==theme.id %}checked{% endif
+                    %} {% if not theme.unlocked %}disabled{% endif %}>
+                <div class="theme-preview theme-{{ theme.id }}">
+                    <span class="theme-icon">{{ theme.icon }}</span>
+                </div>
+                <div class="theme-info">
+                    <span class="theme-name">{{ theme.name }}</span>
+                    {% if not theme.unlocked %}
+                    <span class="lock-badge">🔒 Level {{ forloop.counter|add:1 }}</span>
+                    {% endif %}
+                </div>
+            </label>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Theme</button>
+    </form>
+</div>
+
+<!-- Profile Stats -->
+<div class="card">
+    <h2 class="card-title">📊 Your Stats</h2>
+
+    <div class="stats-list">
+        <div class="stats-row">
+            <span class="stats-label">Level</span>
+            <span class="stats-value">{{ profile.level }} - {{ profile.get_rank }}</span>
+        </div>
+        <div class="stats-row">
+            <span class="stats-label">Total XP</span>
+            <span class="stats-value">{{ profile.xp }}</span>
+        </div>
+        <div class="stats-row">
+            <span class="stats-label">Current Streak</span>
+            <span class="stats-value">🔥 {{ profile.current_streak }} days</span>
+        </div>
+        <div class="stats-row">
+            <span class="stats-label">Longest Streak</span>
+            <span class="stats-value">{{ profile.longest_streak }} days</span>
+        </div>
+        <div class="stats-row">
+            <span class="stats-label">Streak Multiplier</span>
+            <span class="stats-value">{{ profile.streak_multiplier }}x</span>
+        </div>
+        <div class="stats-row">
+            <span class="stats-label">Challenges Completed</span>
+            <span class="stats-value">{{ profile.challenges_completed }}</span>
+        </div>
+    </div>
+</div>
+
+<!-- Unlocked Insights -->
+<div class="card">
+    <h2 class="card-title">🔓 Unlocked Insights</h2>
+
+    {% if profile.unlocked_insights %}
+    <div class="insights-list">
+        {% for insight in profile.unlocked_insights %}
+        <div class="insight-item">
+            <span class="insight-icon">📈</span>
+            <span class="insight-name">{{ insight|title }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state-small">
+        <p>Level up to unlock special insights!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

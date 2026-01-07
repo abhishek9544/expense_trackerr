@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard | Expense Tracker{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<header class="page-header">
+    <div class="header-content">
+        <h1>Welcome Back! 👋</h1>
+        <p class="subtitle">{{ profile.get_rank }}</p>
+    </div>
+    <a href="{% url 'add_expense' %}" class="btn btn-primary">
+        ➕ Quick Add
+    </a>
+</header>
+
+<!-- Level Progress Card -->
+<div class="level-progress">
+    <div class="level-header">
+        <div class="level-badge">
+            <div class="level-icon">🏆</div>
+            <div class="level-info">
+                <h3>Level {{ profile.level }} - {{ profile.get_rank }}</h3>
+                <span>Keep tracking to level up!</span>
+            </div>
+        </div>
+        <div class="streak-multiplier">
+            <span class="streak-badge">🔥 {{ profile.current_streak }} day streak</span>
+            {% if profile.streak_multiplier > 1 %}
+            <span class="multiplier-badge">{{ profile.streak_multiplier }}x XP</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="progress-bar">
+        <div class="progress-fill" style="width: {{ profile.get_progress_percentage }}%;"></div>
+    </div>
+    <div class="progress-text">
+        <span>{{ profile.xp }} XP</span>
+        <span>{{ profile.get_xp_for_next_level }} XP to Level {{ profile.level|add:1 }}</span>
+    </div>
+</div>
+
+<!-- Stats Grid -->
+<div class="stats-grid">
+    <div class="stat-card stat-purple">
+        <div class="stat-icon">📊</div>
+        <div class="stat-value">{{ total_expenses }}</div>
+        <div class="stat-label">Total Entries</div>
+    </div>
+    <div class="stat-card stat-blue">
+        <div class="stat-icon">💸</div>
+        <div class="stat-value">₹{{ total_amount }}</div>
+        <div class="stat-label">Total Spent</div>
+    </div>
+    <div class="stat-card stat-orange">
+        <div class="stat-icon">📅</div>
+        <div class="stat-value">₹{{ week_amount }}</div>
+        <div class="stat-label">This Week</div>
+    </div>
+    <div class="stat-card stat-green">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-value">{{ earned_achievements }}/{{ total_achievements }}</div>
+        <div class="stat-label">Achievements</div>
+    </div>
+</div>
+
+<!-- Two Column Layout -->
+<div class="dashboard-grid">
+    <!-- Active Challenges -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">🎯 Active Challenges</h2>
+            <a href="{% url 'challenges' %}" class="card-link">View All →</a>
+        </div>
+        {% if active_challenges %}
+        <div class="challenge-list">
+            {% for uc in active_challenges %}
+            <div class="challenge-item">
+                <div class="challenge-icon">{{ uc.challenge.icon }}</div>
+                <div class="challenge-info">
+                    <h4>{{ uc.challenge.title }}</h4>
+                    <p>{{ uc.challenge.description }}</p>
+                    <div class="challenge-progress">
+                        <div class="mini-progress">
+                            <div class="mini-progress-fill" style="width: {{ uc.progress|default:0 }}%;"></div>
+                        </div>
+                        <span class="challenge-xp">+{{ uc.challenge.xp_reward }} XP</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state-small">
+            <p>No active challenges. Visit Challenges to start!</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Recent Expenses -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">📝 Recent Expenses</h2>
+            <a href="{% url 'expense_list' %}" class="card-link">View All →</a>
+        </div>
+        {% if recent_expenses %}
+        <div class="expense-list">
+            {% for expense in recent_expenses %}
+            <div class="expense-item">
+                <div class="expense-info">
+                    <span class="expense-desc">{{ expense.description }}</span>
+                    <span class="expense-date">{{ expense.date }}</span>
+                </div>
+                <span class="expense-amount">-₹{{ expense.amount }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state-small">
+            <p>No expenses yet. Start tracking!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
